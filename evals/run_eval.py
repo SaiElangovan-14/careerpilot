@@ -7,9 +7,10 @@ from sqlalchemy import text
 from app.database import Job, SessionLocal, engine, init_db
 from app.services.embeddings import embed
 from app.services.retrieval import hybrid_search
+from app.services.reranker import search_with_rerank
 from evals.metrics import hit_rate_at_k, recall_at_k, reciprocal_rank
 
-MODES = ("keyword", "vector", "hybrid")
+MODES = ("keyword", "vector", "hybrid", "rerank")
 K = 5
 
 
@@ -51,7 +52,10 @@ def main(path: str) -> None:
             recalls, hits, rrs = [], [], []
             for q in queries:
                 relevant = {key_to_id[k] for k in q["relevant"]}
-                results = hybrid_search(session, q["query"], top_k=K, mode=mode)
+                if mode == "rerank":
+                     results = search_with_rerank(session, q["query"], top_k=K)
+                else:
+                    results = hybrid_search(session, q["query"], top_k=K, mode=mode)
                 ids = [job.id for job, _score in results]
                 recalls.append(recall_at_k(ids, relevant, K))
                 hits.append(hit_rate_at_k(ids, relevant, K))
