@@ -1,3 +1,5 @@
+from io import BytesIO
+from pypdf import PdfReader
 import re 
 
 EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
@@ -12,3 +14,7 @@ def parse_resume_text(text: str) -> dict:
     )
     match = EMAIL_RE.search(text)
     return {"email": match.group(0) if match else None, "skills": skills}
+
+def extract_pdf_text(data: bytes) -> str:
+    reader = PdfReader(BytesIO(data))
+    return "\n".join((page.extract_text() or "") for page in reader.pages)
