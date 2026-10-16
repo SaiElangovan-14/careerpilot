@@ -2,7 +2,12 @@ from pgvector.sqlalchemy import Vector
 from sqlalchemy import Integer, String, Text, create_engine, text 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
-DATABASE_URL = "postgresql+psycopg2://careerpilot:careerpilot@localhost:5433/careerpilot"
+import os
+
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+psycopg2://careerpilot:careerpilot@localhost:5433/careerpilot",
+)
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(engine)
