@@ -12,6 +12,9 @@
     "github",
     "jwt",
     "bcrypt",
-    "cloudinary"
+    "cloudinary",
+    "rest api design",
+    "authentication & authorization",
+    "database modeling"
   ]
 }

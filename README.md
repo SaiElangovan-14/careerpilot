@@ -19,3 +19,19 @@ Hybrid matches the best single method on every metric. Off-the-shelf reranking d
 plain hybrid on this set (trained on web Q&A, not job search), so hybrid stays the default.
 The dataset is small and hit@5 is saturated, so a larger, harder set is planned. Next:
 fine-tune on resume-job pairs (Phase 3).
+
+## Resume parsing: regex vs LLM
+
+One resume, 16 hand-labeled skills (`evals/data/resume_gold.json`). Run:
+
+    python -m evals.parser_eval <resume.pdf> evals/data/resume_gold.json
+
+| Parser | Skills found | Precision | Recall |
+|---|---|---|---|
+| Regex (fixed skill list) | 6 | 1.000 | 0.375 |
+| LLM (Gemini, Pydantic-validated) | 16 | 1.000 | 1.000 |
+
+The regex parser can only find skills in a hard-coded list, so it misses anything outside it
+(SQLAlchemy, Pydantic, Pytest, JWT, bcrypt, Cloudinary and more). The LLM parser returns a
+validated `ResumeProfile` (skills, education, projects) and is told to use only skills named
+in the resume. Caveat: one resume, so this is a smoke test. More labeled resumes are planned.
