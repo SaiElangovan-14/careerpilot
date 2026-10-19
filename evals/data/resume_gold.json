@@ -1,0 +1,17 @@
+{
+  "skills": [
+    "python",
+    "fastapi",
+    "postgresql",
+    "sql",
+    "docker",
+    "git",
+    "sqlalchemy",
+    "pydantic",
+    "pytest",
+    "github",
+    "jwt",
+    "bcrypt",
+    "cloudinary"
+  ]
+}
