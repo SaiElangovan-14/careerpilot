@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.database import Job, SessionLocal,init_db
 from app.services.embeddings import embed 
 from app.services.retrieval import hybrid_search
+from app.services.resume_profile import build_profile
 from app.services.resume_parser import extract_pdf_text, parse_resume_text
 
 @asynccontextmanager
@@ -90,13 +91,13 @@ def match_resume(
     if not text.strip():
         raise HTTPException(status_code=422, detail="No text found in PDF (is it a scanned image?)")
 
-    parsed = parse_resume_text(text)
-    query = " ".join(parsed["skills"]) or text[:500]
+    profile, parser = build_profile(text)
+    query = " ".join(profile.skills) or text[:500]
     results = hybrid_search(db, query, top_k=top_k)
 
     return {
-        "email": parsed["email"],
-        "skills": parsed["skills"],
+        "parser": parser,
+        "profile": profile,
         "matches": [
             JobOut(id=job.id, title=job.title, company=job.company, score=score)
             for job, score in results
