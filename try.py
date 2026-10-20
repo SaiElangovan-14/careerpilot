@@ -1,11 +1,37 @@
-import sys
+from app.services.llm_resume_parser import ResumeProfile, Project
+from app.services.tailor import TailoredResume, TailoredBullet
+from app.services.tailor_check import check_bullets
 
-from app.services.llm_resume_parser import parse_resume_llm
-from app.services.resume_parser import extract_pdf_text, parse_resume_text
+profile = ResumeProfile(
+    name=None,
+    email=None,
+    skills=["python", "fastapi", "postgresql", "docker"],
+    education=[],
+    projects=[
+        Project(
+            name="Job Board API",
+            description="Built a REST API with FastAPI and PostgreSQL",
+            technologies=["fastapi", "postgresql"],
+        )
+    ],
+    experience_summary=None,
+)
 
-with open(sys.argv[1], "rb") as f:
-    text = extract_pdf_text(f.read())
+result = TailoredResume(
+    summary="Backend intern candidate.",
+    bullets=[
+        TailoredBullet(
+            text="Built a REST API with FastAPI and PostgreSQL.",
+            source="Built a REST API with FastAPI and PostgreSQL",
+        ),
+        TailoredBullet(
+            text="Deployed services on Kubernetes at scale.",
+            source="Led a Kubernetes migration at Google",
+        ),
+    ],
+    matched_skills=["fastapi", "postgresql"],
+    missing_skills=["kubernetes"],
+)
 
-print("REGEX:", parse_resume_text(text))
-print()
-print("LLM:", parse_resume_llm(text).model_dump_json(indent=2))
+for c in check_bullets(profile, result):
+    print(c.ok, "|", c.text, "| grounded:", c.grounded, "| leaked:", c.claims_missing_skill)

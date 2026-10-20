@@ -17,9 +17,11 @@ _client = None
 def get_client() -> genai.Client:
     global _client
     if _client is None:
-        _client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        _client = genai.Client(
+            api_key=os.getenv("GEMINI_API_KEY"),
+            http_options=types.HttpOptions(timeout=30_000),  # milliseconds
+        )
     return _client
-
 
 def generate_structured(prompt: str, schema: type[BaseModel]) -> BaseModel:
     last_error = None
