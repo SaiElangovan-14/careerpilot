@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from typing import Literal
 
 from fastapi import Depends, FastAPI 
-from fastapi import File, HTTPException,Query, UploadFile
+from fastapi import File, Form, HTTPException,Query, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session 
 
@@ -11,6 +11,7 @@ from app.services.embeddings import embed
 from app.services.retrieval import hybrid_search
 from app.services.resume_profile import build_profile
 from app.services.resume_parser import extract_pdf_text, parse_resume_text
+from app.services.tailor_pipeline import TailorReport, tailor_and_verify
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -103,3 +104,35 @@ def match_resume(
             for job, score in results
         ],
     }
+
+@app.post("/tailor", response_model=TailorReport)
+def tailor(
+    job_id: int = Form(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    job = db.get(Job, job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    if not (file.filename or "").lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Please upload a PDF")
+
+    data = file.file.read()
+    if len(data) > MAX_PDF_BYTES:
+        raise HTTPException(status_code=413, detail="PDF is larger than 5 MB")
+
+    try:
+        text = extract_pdf_text(data)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Could not read this PDF")
+
+    if not text.strip():
+        raise HTTPException(status_code=422, detail="No text found in PDF")
+
+    profile, _parser = build_profile(text)
+
+    try:
+        return tailor_and_verify(profile, job.title, job.description)
+    except RuntimeError:
+        raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")
