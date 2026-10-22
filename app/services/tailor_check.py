@@ -15,6 +15,7 @@ class BulletCheck(BaseModel):
     source: str
     grounded: bool                    # is the cited source really in the resume?
     claims_missing_skill: list[str]   # skills the resume lacks but the bullet mentions
+    unsupported_numbers: list[str]    # numbers in the bullet that are not in the resume
     ok: bool
 
 
@@ -35,13 +36,17 @@ def check_bullets(
             if _tokens(skill) and set(_tokens(skill)) <= bullet_tokens
         ]
 
+        numbers = re.findall(r"\d+", bullet.text)
+        unsupported = [n for n in numbers if n not in corpus]
+
         checks.append(
             BulletCheck(
                 text=bullet.text,
                 source=bullet.source,
                 grounded=grounded,
                 claims_missing_skill=leaked,
-                ok=grounded and not leaked,
+                unsupported_numbers=unsupported,
+                ok=grounded and not leaked and not unsupported,
             )
         )
     return checks

@@ -62,3 +62,17 @@ def test_missing_skill_in_bullet_is_flagged():
     assert check.grounded
     assert check.claims_missing_skill == ["kubernetes"]
     assert not check.ok
+
+def test_invented_number_is_flagged():
+    result = _result(
+    [TailoredBullet(
+        text="Built a REST API with FastAPI serving 5000 users.",
+        source="Built a REST API with FastAPI and PostgreSQL",
+    )]
+    )
+    check = check_bullets(PROFILE, result)[0]
+    assert check.grounded
+    assert check.unsupported_numbers == ["5000"]
+    assert not check.ok
+
+        

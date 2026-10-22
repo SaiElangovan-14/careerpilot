@@ -8,8 +8,8 @@ from pydantic import BaseModel
 
 load_dotenv()
 
-MODELS = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash"]
-RETRIES_PER_MODEL = 2
+MODELS = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash"]
+RETRIES_PER_MODEL = 1
 
 _client = None
 

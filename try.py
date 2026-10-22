@@ -1,37 +1,23 @@
-from app.services.llm_resume_parser import ResumeProfile, Project
-from app.services.tailor import TailoredResume, TailoredBullet
-from app.services.tailor_check import check_bullets
+from app.services.llm_resume_parser import parse_resume_llm
+from app.services.resume_parser import extract_pdf_text
+from app.services.tailor_pipeline import tailor_and_verify
 
-profile = ResumeProfile(
-    name=None,
-    email=None,
-    skills=["python", "fastapi", "postgresql", "docker"],
-    education=[],
-    projects=[
-        Project(
-            name="Job Board API",
-            description="Built a REST API with FastAPI and PostgreSQL",
-            technologies=["fastapi", "postgresql"],
-        )
-    ],
-    experience_summary=None,
-)
+with open(r"C:\Users\saiel\Downloads\Sai_Elangovan_Resume-1.pdf", "rb") as f:
+    text = extract_pdf_text(f.read())
 
-result = TailoredResume(
-    summary="Backend intern candidate.",
-    bullets=[
-        TailoredBullet(
-            text="Built a REST API with FastAPI and PostgreSQL.",
-            source="Built a REST API with FastAPI and PostgreSQL",
-        ),
-        TailoredBullet(
-            text="Deployed services on Kubernetes at scale.",
-            source="Led a Kubernetes migration at Google",
-        ),
-    ],
-    matched_skills=["fastapi", "postgresql"],
-    missing_skills=["kubernetes"],
-)
+profile = parse_resume_llm(text)
 
-for c in check_bullets(profile, result):
-    print(c.ok, "|", c.text, "| grounded:", c.grounded, "| leaked:", c.claims_missing_skill)
+job = """Backend Developer Intern. Build REST APIs with FastAPI and PostgreSQL,
+write tests, use Docker. Nice to have: Kubernetes, AWS, Redis."""
+
+report = tailor_and_verify(profile, "Backend Developer Intern", job)
+
+print("SUMMARY:", report.summary)
+print("MATCHED:", report.matched_skills)
+print("MISSING:", report.missing_skills)
+print("\nKEPT:")
+for b in report.bullets:
+    print(" -", b.text)
+print("\nREJECTED:")
+for b in report.rejected:
+    print(" -", b.text, "| grounded:", b.grounded, "| leaked:", b.claims_missing_skill)
