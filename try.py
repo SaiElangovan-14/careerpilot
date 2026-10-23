@@ -1,23 +1,16 @@
-from app.services.llm_resume_parser import parse_resume_llm
-from app.services.resume_parser import extract_pdf_text
-from app.services.tailor_pipeline import tailor_and_verify
+from app.services.judge import judge_bullet
 
-with open(r"C:\Users\saiel\Downloads\Sai_Elangovan_Resume-1.pdf", "rb") as f:
-    text = extract_pdf_text(f.read())
+cases = [
+    (
+        "Job Board API project: Implemented job posting CRUD, search/filter/pagination, and an application workflow with status tracking.",
+        "Implemented backend CRUD operations, search, filtering, and pagination for data processing in PostgreSQL.",
+    ),
+    (
+        "Job Board API project: Implemented job posting CRUD, search/filter/pagination, and an application workflow with status tracking.",
+        "Built job posting CRUD, search, filtering and pagination.",
+    ),
+]
 
-profile = parse_resume_llm(text)
-
-job = """Backend Developer Intern. Build REST APIs with FastAPI and PostgreSQL,
-write tests, use Docker. Nice to have: Kubernetes, AWS, Redis."""
-
-report = tailor_and_verify(profile, "Backend Developer Intern", job)
-
-print("SUMMARY:", report.summary)
-print("MATCHED:", report.matched_skills)
-print("MISSING:", report.missing_skills)
-print("\nKEPT:")
-for b in report.bullets:
-    print(" -", b.text)
-print("\nREJECTED:")
-for b in report.rejected:
-    print(" -", b.text, "| grounded:", b.grounded, "| leaked:", b.claims_missing_skill)
+for source, bullet in cases:
+    v = judge_bullet(source, bullet)
+    print(v.supported, "|", v.unsupported_claims, "|", bullet[:60])

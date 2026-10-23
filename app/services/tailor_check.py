@@ -16,6 +16,7 @@ class BulletCheck(BaseModel):
     grounded: bool                    # is the cited source really in the resume?
     claims_missing_skill: list[str]   # skills the resume lacks but the bullet mentions
     unsupported_numbers: list[str]    # numbers in the bullet that are not in the resume
+    unsupported_claims: list[str] =[]
     ok: bool
 
 
@@ -50,3 +51,29 @@ def check_bullets(
             )
         )
     return checks
+
+def test_judge_rejects_stretched_bullet(monkeypatch):
+    fake = TailoredResume(
+        summary="x",
+        bullets=[
+            TailoredBullet(
+                text="Built a REST API with FastAPI for big data processing.",
+                source="Built a REST API with FastAPI and PostgreSQL",
+            ),
+        ],
+        matched_skills=["fastapi"],
+        missing_skills=[],
+    )
+    monkeypatch.setattr(tailor_pipeline, "tailor_resume", lambda *a, **k: fake)
+    monkeypatch.setattr(
+        tailor_pipeline,
+        "judge_bullet",
+        lambda source, bullet: BulletVerdict(
+            supported=False, unsupported_claims=["big data processing"]
+        ),
+    )
+
+    report = tailor_pipeline.tailor_and_verify(PROFILE, "Intern", "FastAPI")
+
+    assert report.bullets == []
+    assert report.rejected[0].unsupported_claims == ["big data processing"]
