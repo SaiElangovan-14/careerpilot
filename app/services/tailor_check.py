@@ -17,6 +17,7 @@ class BulletCheck(BaseModel):
     claims_missing_skill: list[str]   # skills the resume lacks but the bullet mentions
     unsupported_numbers: list[str]    # numbers in the bullet that are not in the resume
     unsupported_claims: list[str] =[]
+    repaired: bool = False 
     ok: bool
 
 

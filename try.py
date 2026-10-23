@@ -1,16 +1,9 @@
-from app.services.judge import judge_bullet
+from app.services.repair import rewrite_bullet
 
-cases = [
-    (
-        "Job Board API project: Implemented job posting CRUD, search/filter/pagination, and an application workflow with status tracking.",
-        "Implemented backend CRUD operations, search, filtering, and pagination for data processing in PostgreSQL.",
-    ),
-    (
-        "Job Board API project: Implemented job posting CRUD, search/filter/pagination, and an application workflow with status tracking.",
-        "Built job posting CRUD, search, filtering and pagination.",
-    ),
-]
+source = (
+    "Built a dual-role job platform backend supporting Employer and Candidate accounts "
+    "with JWT authentication and ownership-based access control."
+)
+bullet = "Designed a Job Board API supporting search, pagination, CRUD operations, and role-based access control."
 
-for source, bullet in cases:
-    v = judge_bullet(source, bullet)
-    print(v.supported, "|", v.unsupported_claims, "|", bullet[:60])
+print(rewrite_bullet(source, bullet, ["role-based access control"], "Data Engineer Intern"))
