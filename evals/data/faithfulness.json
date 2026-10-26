@@ -1,0 +1,62 @@
+[
+  {
+    "source": "Built a REST API with FastAPI and PostgreSQL",
+    "bullet": "Built a REST API with FastAPI and PostgreSQL",
+    "unfaithful": false
+  },
+  {
+    "source": "Built a REST API with FastAPI and PostgreSQL",
+    "bullet": "Developed backend REST endpoints using FastAPI backed by a PostgreSQL database",
+    "unfaithful": false
+  },
+  {
+    "source": "Built a REST API with FastAPI and PostgreSQL",
+    "bullet": "Built a REST API with FastAPI and PostgreSQL for large-scale data processing",
+    "unfaithful": true
+  },
+  {
+    "source": "Built a REST API with FastAPI and PostgreSQL",
+    "bullet": "Built a REST API with FastAPI and PostgreSQL serving 10,000 daily users",
+    "unfaithful": true
+  },
+  {
+    "source": "Implemented JWT authentication with role-based access control",
+    "bullet": "Implemented JWT authentication and role-based access control",
+    "unfaithful": false
+  },
+  {
+    "source": "Implemented JWT authentication with role-based access control",
+    "bullet": "Designed ownership-based authorization and OAuth2 login",
+    "unfaithful": true
+  },
+  {
+    "source": "Containerized the application using Docker",
+    "bullet": "Containerized the application with Docker for consistent deployment",
+    "unfaithful": false
+  },
+  {
+    "source": "Containerized the application using Docker",
+    "bullet": "Deployed the application to Kubernetes on AWS using Docker",
+    "unfaithful": true
+  },
+  {
+    "source": "Wrote unit tests with pytest for the service layer",
+    "bullet": "Wrote pytest unit tests covering the service layer",
+    "unfaithful": false
+  },
+  {
+    "source": "Wrote unit tests with pytest for the service layer",
+    "bullet": "Achieved 95% test coverage across the codebase with pytest",
+    "unfaithful": true
+  },
+  {
+    "source": "Skills: Python, SQL, Git, Docker",
+    "bullet": "Proficient in Python, SQL, Git and Docker",
+    "unfaithful": true
+  },
+  {
+    "source": "Skills: Python, SQL, Git, Docker",
+    "bullet": "Skilled in Python, SQL, Git and Docker",
+    "unfaithful": false
+  }
+]
