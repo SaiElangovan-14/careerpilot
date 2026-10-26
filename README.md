@@ -35,3 +35,19 @@ The regex parser can only find skills in a hard-coded list, so it misses anythin
 (SQLAlchemy, Pydantic, Pytest, JWT, bcrypt, Cloudinary and more). The LLM parser returns a
 validated `ResumeProfile` (skills, education, projects) and is told to use only skills named
 in the resume. Caveat: one resume, so this is a smoke test. More labeled resumes are planned.
+
+## What CareerPilot does
+
+CareerPilot is an AI copilot for job applications. Given a job posting and a resume, it:
+
+1. **Searches jobs** with hybrid retrieval: Postgres full-text search plus pgvector embeddings, merged with Reciprocal Rank Fusion.
+2. **Parses resumes** into a structured profile using an LLM with a fixed schema.
+3. **Tailors resume bullets** to a job, then checks every bullet before it is shown:
+   - each bullet must cite a source fact from the profile;
+   - a rule-based check catches invented sources, invented numbers, and skills the candidate does not have;
+   - an LLM judge checks that the bullet claims nothing beyond its source;
+   - a rejected bullet gets one rewrite attempt and is re-checked, otherwise it is dropped.
+
+## How quality is measured
+
+Retrieval, resume parsing, and the faithfulness judge each have a labelled eval set under `evals/`:
