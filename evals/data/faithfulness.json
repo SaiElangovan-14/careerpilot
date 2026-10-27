@@ -58,5 +58,65 @@
     "source": "Skills: Python, SQL, Git, Docker",
     "bullet": "Skilled in Python, SQL, Git and Docker",
     "unfaithful": false
+  },
+  {
+    "source": "Built a multi-tenant SaaS backend with FastAPI, PostgreSQL and SQLAlchemy",
+    "bullet": "Developed a multi-tenant SaaS backend using FastAPI, PostgreSQL and SQLAlchemy",
+    "unfaithful": false
+  },
+  {
+    "source": "Built a multi-tenant SaaS backend with FastAPI, PostgreSQL and SQLAlchemy",
+    "bullet": "Built a multi-tenant SaaS backend serving 50 tenants with FastAPI and PostgreSQL",
+    "unfaithful": true
+  },
+  {
+    "source": "Implemented JWT authentication and role-based access control (RBAC)",
+    "bullet": "Implemented JWT-based authentication with RBAC",
+    "unfaithful": false
+  },
+  {
+    "source": "Implemented JWT authentication and role-based access control (RBAC)",
+    "bullet": "Implemented JWT authentication, RBAC and OAuth2 social login",
+    "unfaithful": true
+  },
+  {
+    "source": "Built a job board API with two user types, Employers and Candidates, with full CRUD, search, filtering and pagination",
+    "bullet": "Built a job board API for Employers and Candidates with CRUD, search, filtering and pagination",
+    "unfaithful": false
+  },
+  {
+    "source": "Built a job board API with two user types, Employers and Candidates, with full CRUD, search, filtering and pagination",
+    "bullet": "Built a production job board API used by Employers and Candidates",
+    "unfaithful": true
+  },
+  {
+    "source": "Wrote a 20-test pytest suite for the job board API",
+    "bullet": "Covered the job board API with a 20-test pytest suite",
+    "unfaithful": false
+  },
+  {
+    "source": "Wrote a 20-test pytest suite for the job board API",
+    "bullet": "Wrote a 20-test pytest suite achieving 90% coverage of the job board API",
+    "unfaithful": true
+  },
+  {
+    "source": "Containerized the job board API with Docker",
+    "bullet": "Containerized the job board API with Docker and set up CI/CD pipelines",
+    "unfaithful": true
+  },
+  {
+    "source": "Added resume upload to the job board API using Cloudinary",
+    "bullet": "Added resume upload to the job board API using Cloudinary",
+    "unfaithful": false
+  },
+  {
+    "source": "Built CareerPilot, an AI job-application copilot, with hybrid search over job postings",
+    "bullet": "Built CareerPilot, an AI copilot that increased interview rates by matching candidates to jobs",
+    "unfaithful": true
+  },
+  {
+    "source": "Implemented JWT authentication and role-based access control (RBAC)",
+    "bullet": "Implemented RBAC with multi-tenant data isolation",
+    "unfaithful": true
   }
 ]
