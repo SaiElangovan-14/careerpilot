@@ -4,3 +4,4 @@ __pycache__/
 .venv/
 .pytest_cache/
 out.txt
+evals/.judge_cache.json

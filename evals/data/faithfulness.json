@@ -32,7 +32,7 @@
   {
     "source": "Containerized the application using Docker",
     "bullet": "Containerized the application with Docker for consistent deployment",
-    "unfaithful": false
+    "unfaithful": true
   },
   {
     "source": "Containerized the application using Docker",
