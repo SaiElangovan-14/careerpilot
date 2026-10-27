@@ -12,6 +12,7 @@ from app.services.retrieval import hybrid_search
 from app.services.resume_profile import build_profile
 from app.services.resume_parser import extract_pdf_text, parse_resume_text
 from app.services.tailor_pipeline import TailorReport, tailor_and_verify
+from app.services.cover_letter import LetterReport, draft_and_verify_letter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -136,3 +137,37 @@ def tailor(
         return tailor_and_verify(profile, job.title, job.description)
     except RuntimeError:
         raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")
+
+@app.post("/cover-letter", response_model=LetterReport)
+def cover_letter_endpoint(
+    job_id: int = Form(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    job = db.get(Job, job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    if not (file.filename or "").lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Please upload a PDF")
+
+    data = file.file.read()
+    if len(data) > MAX_PDF_BYTES:
+        raise HTTPException(status_code=413, detail="PDF is larger than 5 MB")
+
+    try:
+        text = extract_pdf_text(data)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Could not read this PDF")
+
+    if not text.strip():
+        raise HTTPException(status_code=422, detail="No text found in PDF")
+
+    profile, _parser = build_profile(text)
+
+    try:
+        return draft_and_verify_letter(profile, job.title, job.description)
+    except RuntimeError:
+        raise HTTPException(
+            status_code=503, detail="The AI service is busy, try again shortly"
+        )
