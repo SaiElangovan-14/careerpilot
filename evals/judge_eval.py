@@ -47,22 +47,22 @@ def main(path: str = "evals/data/faithfulness.json") -> None:
                 except RuntimeError as e:
                     print("retry", attempt + 1, "|", str(e)[:40])
                     if "429" in str(e):
-                    quota_hit = True
-                    break
+                        quota_hit = True
+                        break
                     time.sleep(30)
-         if verdict is not None:
-            cache[key] = verdict.model_dump()
-            _save_cache(cache)
-            time.sleep(5)
+        if verdict is not None:
+             cache[key] = verdict.model_dump()
+             _save_cache(cache)
+             time.sleep(5)
 
-         if quota_hit and verdict is None:
-            print("Quota exhausted, stopping. Run again later; cached cases are kept.")
-            break
+        if quota_hit and verdict is None:
+             print("Quota exhausted, stopping. Run again later; cached cases are kept.")
+             break
 
         if verdict is None:
-            print("SKIP |", case["bullet"][:60])
-            skipped += 1
-            continue
+             print("SKIP |", case["bullet"][:60])
+             skipped += 1
+             continue
 
         flagged = not verdict.supported
         unfaithful = case["unfaithful"]

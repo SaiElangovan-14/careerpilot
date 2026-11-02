@@ -51,3 +51,14 @@ CareerPilot is an AI copilot for job applications. Given a job posting and a res
 ## How quality is measured
 
 Retrieval, resume parsing, and the faithfulness judge each have a labelled eval set under `evals/`:
+
+### Faithfulness judge
+
+An LLM judge checks every generated resume bullet against the source fact it cites. I measured it on a 24-case labelled set (10 faithful rewordings, 14 bullets with an inserted fault such as an invented number, a new tool, a bigger scale, a skill-level word, or a blend of two projects).
+
+| Metric | Result |
+|---|---|
+| Unfaithful bullets caught | 14 / 14 |
+| Faithful bullets wrongly flagged | 0 / 10 |
+
+Caveats: the set is small, and the skill-level rule was added after the judge missed one case, so this is a regression test and not a general accuracy claim. Next: a larger set built from real job postings.
