@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger("careerpilot")
+
 from contextlib import asynccontextmanager
 from typing import Literal
 
@@ -167,7 +171,6 @@ def cover_letter_endpoint(
 
     try:
         return draft_and_verify_letter(profile, job.title, job.description)
-    except RuntimeError:
-        raise HTTPException(
-            status_code=503, detail="The AI service is busy, try again shortly"
-        )
+    except RuntimeError as e:
+        logger.warning("LLM call failed: %s", e)
+        raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")

@@ -23,7 +23,7 @@ def get_client() -> genai.Client:
         )
     return _client
 
-def generate_structured(prompt: str, schema: type[BaseModel]) -> BaseModel:
+def generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
     last_error = None
     for model in MODELS:
         for attempt in range(RETRIES_PER_MODEL):
@@ -44,3 +44,39 @@ def generate_structured(prompt: str, schema: type[BaseModel]) -> BaseModel:
                 last_error = e
                 time.sleep(2 * (attempt + 1))
     raise RuntimeError(f"All models failed: {last_error}")
+
+
+import hashlib
+import json
+import os
+
+CACHE_PATH = ".llm_cache.json"
+
+
+def _cache_load() -> dict:
+    if os.path.exists(CACHE_PATH):
+        with open(CACHE_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
+def _cache_save(cache: dict) -> None:
+    with open(CACHE_PATH, "w", encoding="utf-8") as f:
+        json.dump(cache, f)
+
+
+def generate_structured(prompt, schema):
+    if os.getenv("LLM_CACHE", "1") != "1":
+        return _generate_uncached(prompt, schema)
+
+    raw = schema.__name__ + json.dumps(schema.model_json_schema(), sort_keys=True) + prompt
+    key = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+    cache = _cache_load()
+    if key in cache:
+        return schema.model_validate(cache[key])
+
+    result = _generate_uncached(prompt, schema)
+    cache[key] = result.model_dump()
+    _cache_save(cache)
+    return result
