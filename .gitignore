@@ -5,3 +5,4 @@ __pycache__/
 .pytest_cache/
 out.txt
 evals/.judge_cache.json
+.llm_cache.json
