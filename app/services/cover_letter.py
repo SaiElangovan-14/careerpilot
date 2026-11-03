@@ -51,8 +51,9 @@ PROMPT = """You write the body of a cover letter for the job below.
 Rules:
 - Write 3 to 5 sentences. Each sentence is about exactly one of the
   candidate's projects listed below.
-- Every sentence must include a "source": the exact project text it is
-  based on.
+- Every sentence must include a "source": the project's name, then a
+  colon, then the exact project text the sentence is based on. For
+  example: "TenantCore: Built a multi-tenant SaaS backend with FastAPI".
 - Use ONLY facts that appear in the projects. Never invent tools, numbers,
   outcomes, employers or experience.
 - You may say why a project is relevant to the job, but do not claim more

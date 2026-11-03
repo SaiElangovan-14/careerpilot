@@ -23,7 +23,7 @@ def get_client() -> genai.Client:
         )
     return _client
 
-def generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
+def _generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
     last_error = None
     for model in MODELS:
         for attempt in range(RETRIES_PER_MODEL):
