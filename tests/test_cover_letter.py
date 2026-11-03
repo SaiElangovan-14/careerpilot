@@ -102,3 +102,10 @@ def test_letter_is_empty_when_no_project_matches(monkeypatch):
     )
     assert report.body == ""
     assert report.kept == [] and report.rejected == []
+
+def test_frame_letter_wraps_body_and_handles_empty():
+    letter = cover_letter.frame_letter("I built an API.", "Backend Intern", "Acme", "Sai")
+    assert letter.startswith("Dear Hiring Team,")
+    assert "Backend Intern position at Acme." in letter
+    assert letter.endswith("Sincerely,\nSai")
+    assert cover_letter.frame_letter("", "Backend Intern", "Acme", "Sai") == ""

@@ -16,7 +16,7 @@ from app.services.retrieval import hybrid_search
 from app.services.resume_profile import build_profile
 from app.services.resume_parser import extract_pdf_text, parse_resume_text
 from app.services.tailor_pipeline import TailorReport, tailor_and_verify
-from app.services.cover_letter import LetterReport, draft_and_verify_letter
+from app.services.cover_letter import LetterReport, draft_and_verify_letter, frame_letter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -170,7 +170,9 @@ def cover_letter_endpoint(
     profile, _parser = build_profile(text)
 
     try:
-        return draft_and_verify_letter(profile, job.title, job.description)
+        report = draft_and_verify_letter(profile, job.title, job.description)
+        report.letter = frame_letter(report.body, job.title, job.company, profile.name)
+        return report
     except RuntimeError as e:
         logger.warning("LLM call failed: %s", e)
         raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")

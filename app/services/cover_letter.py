@@ -92,6 +92,7 @@ class LetterReport(BaseModel):
     body: str
     kept: list[BulletCheck]
     rejected: list[BulletCheck]
+    letter: str = ""
 
 
 def draft_and_verify_letter(
@@ -111,3 +112,13 @@ def draft_and_verify_letter(
 
     body = " ".join(c.text for c in kept)
     return LetterReport(body=body, kept=kept, rejected=rejected)
+
+def frame_letter(
+    body: str, job_title: str, company: str | None, name: str | None
+) -> str:
+    if not body:
+        return ""
+    at = f" at {company}" if company else ""
+    intro = f"I am applying for the {job_title} position{at}."
+    sign = name or "Applicant"
+    return f"Dear Hiring Team,\n\n{intro} {body}\n\nSincerely,\n{sign}"
