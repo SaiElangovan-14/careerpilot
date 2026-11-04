@@ -20,13 +20,24 @@ def make_profile():
     )
 
 
-def test_one_chunk_per_project_with_ids():
+def test_projects_split_into_sentence_chunks():
     chunks = chunk_profile(make_profile())
-    projects = [c for c in chunks if c.kind == "project"]
-    assert [c.chunk_id for c in projects] == ["project-0", "project-1"]
-    assert "TenantCore" in projects[0].text
-    assert "PostgreSQL" in projects[0].text
+    project_chunks = [c for c in chunks if c.kind == "project"]
+    assert [c.chunk_id for c in project_chunks] == [
+        "project-0-0",
+        "project-0-tech",
+        "project-1-0",
+    ]
+    assert project_chunks[0].text == "TenantCore: Built a multi-tenant SaaS backend"
+    assert "PostgreSQL" in project_chunks[1].text
 
+
+def test_multi_sentence_description_splits():
+    profile = make_profile()
+    profile.projects[1].description = "Built a blog. Added comments and auth."
+    ids = [c.chunk_id for c in chunk_profile(profile) if c.kind == "project"]
+    assert "project-1-0" in ids
+    assert "project-1-1" in ids
 
 def test_skills_education_chunks_and_no_empty_experience():
     chunks = chunk_profile(make_profile())
