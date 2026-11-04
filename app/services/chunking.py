@@ -34,7 +34,7 @@ def chunk_profile(profile: ResumeProfile) -> list[Chunk]:
             chunks.append(
                 Chunk(
                     chunk_id=f"project-{i}-tech",
-                    kind="project",
+                    kind="tech",
                     title=p.name,
                     text=f"{p.name} technologies: {', '.join(p.technologies)}",
                 )

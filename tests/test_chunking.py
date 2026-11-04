@@ -23,14 +23,11 @@ def make_profile():
 def test_projects_split_into_sentence_chunks():
     chunks = chunk_profile(make_profile())
     project_chunks = [c for c in chunks if c.kind == "project"]
-    assert [c.chunk_id for c in project_chunks] == [
-        "project-0-0",
-        "project-0-tech",
-        "project-1-0",
-    ]
+    assert [c.chunk_id for c in project_chunks] == ["project-0-0", "project-1-0"]
     assert project_chunks[0].text == "TenantCore: Built a multi-tenant SaaS backend"
-    assert "PostgreSQL" in project_chunks[1].text
-
+    tech = [c for c in chunks if c.kind == "tech"]
+    assert [c.chunk_id for c in tech] == ["project-0-tech"]
+    assert "PostgreSQL" in tech[0].text
 
 def test_multi_sentence_description_splits():
     profile = make_profile()
