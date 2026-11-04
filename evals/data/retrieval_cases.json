@@ -1,0 +1,79 @@
+{
+  "resume": {
+    "name": "Test Candidate",
+    "email": null,
+    "skills": ["Python", "FastAPI", "PostgreSQL", "Docker", "pandas"],
+    "education": [
+      {
+        "degree": "B.E. Electronics and Communication Engineering",
+        "institution": "Test Institute of Technology",
+        "year": "2026"
+      }
+    ],
+    "projects": [
+      {
+        "name": "TenantCore",
+        "description": "Built a multi-tenant SaaS backend with FastAPI and PostgreSQL. Implemented JWT authentication with role-based access control. Isolated each tenant's data using a tenant id on every table.",
+        "technologies": ["FastAPI", "PostgreSQL", "JWT", "Docker"]
+      },
+      {
+        "name": "Job Board API",
+        "description": "Built a REST API for job listings with search and pagination. Containerised the API and database with Docker Compose. Wrote automated tests with pytest.",
+        "technologies": ["FastAPI", "PostgreSQL", "Docker", "pytest"]
+      },
+      {
+        "name": "CareerPilot",
+        "description": "Built hybrid retrieval combining Postgres full-text search and pgvector with reciprocal rank fusion. Evaluated retrieval with recall and MRR on a labelled golden set. Added an LLM judge that checks generated resume bullets against the source text. Parsed resume PDFs into structured profiles with Gemini structured output.",
+        "technologies": ["Python", "FastAPI", "pgvector", "Gemini"]
+      },
+      {
+        "name": "Job Scraper",
+        "description": "Wrote a Python scraper that collected job postings from public pages. Cleaned and deduplicated the data with pandas. Scheduled the pipeline to run daily with cron.",
+        "technologies": ["Python", "pandas", "BeautifulSoup"]
+      }
+    ],
+    "experience_summary": null
+  },
+  "cases": [
+    {
+      "title": "Backend Developer Intern",
+      "description": "Build REST APIs with FastAPI and PostgreSQL. Implement authentication and authorization. Containerize services with Docker.",
+      "relevant": ["project-0-0", "project-0-1", "project-1-0", "project-1-1"]
+    },
+    {
+      "title": "Data Engineer Intern",
+      "description": "Build and maintain data pipelines in Python. Clean, transform and deduplicate data with pandas. Schedule recurring jobs.",
+      "relevant": ["project-3-0", "project-3-1", "project-3-2"]
+    },
+    {
+      "title": "AI Engineer Intern",
+      "description": "Build retrieval-augmented generation systems. Experience with vector databases and embeddings. Evaluate LLM outputs.",
+      "relevant": ["project-2-0", "project-2-1", "project-2-2"]
+    },
+    {
+      "title": "Search Engineer Intern",
+      "description": "Work on search relevance. Combine keyword and semantic search. Measure ranking quality with MRR and recall.",
+      "relevant": ["project-2-0", "project-2-1"]
+    },
+    {
+      "title": "Multi-tenant SaaS Backend Engineer",
+      "description": "Design multi-tenant architecture with strict data isolation. Secure APIs with JWT and role-based access.",
+      "relevant": ["project-0-0", "project-0-1", "project-0-2"]
+    },
+    {
+      "title": "QA Automation Intern",
+      "description": "Write automated tests for APIs. Use pytest and continuous integration pipelines.",
+      "relevant": ["project-1-2"]
+    },
+    {
+      "title": "LLM Application Developer",
+      "description": "Build applications on top of LLM APIs. Use structured outputs and guardrails to reduce hallucination. Parse documents into structured data.",
+      "relevant": ["project-2-2", "project-2-3"]
+    },
+    {
+      "title": "DevOps Intern",
+      "description": "Containerize applications with Docker and Docker Compose. Automate deployments.",
+      "relevant": ["project-1-1"]
+    }
+  ]
+}
