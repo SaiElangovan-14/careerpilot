@@ -110,12 +110,7 @@ def match_resume(
         ],
     }
 
-@app.post("/tailor", response_model=TailorReport)
-def tailor(
-    job_id: int = Form(...),
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db),
-):
+def _read_job_and_profile(db: Session, job_id: int, file: UploadFile):
     job = db.get(Job, job_id)
     if job is None:
         raise HTTPException(status_code=404, detail="Job not found")
@@ -136,11 +131,22 @@ def tailor(
         raise HTTPException(status_code=422, detail="No text found in PDF")
 
     profile, _parser = build_profile(text)
+    return job, profile
+
+@app.post("/tailor", response_model=TailorReport)
+def tailor(
+    job_id: int = Form(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    job, profile = _read_job_and_profile(db, job_id, file)
 
     try:
         return tailor_and_verify(profile, job.title, job.description)
-    except RuntimeError:
+    except RuntimeError as e:
+        logger.warning("LLM call failed: %s", e)
         raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")
+
 
 @app.post("/cover-letter", response_model=LetterReport)
 def cover_letter_endpoint(
@@ -148,26 +154,7 @@ def cover_letter_endpoint(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    job = db.get(Job, job_id)
-    if job is None:
-        raise HTTPException(status_code=404, detail="Job not found")
-
-    if not (file.filename or "").lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Please upload a PDF")
-
-    data = file.file.read()
-    if len(data) > MAX_PDF_BYTES:
-        raise HTTPException(status_code=413, detail="PDF is larger than 5 MB")
-
-    try:
-        text = extract_pdf_text(data)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Could not read this PDF")
-
-    if not text.strip():
-        raise HTTPException(status_code=422, detail="No text found in PDF")
-
-    profile, _parser = build_profile(text)
+    job, profile = _read_job_and_profile(db, job_id, file)
 
     try:
         report = draft_and_verify_letter(profile, job.title, job.description)
