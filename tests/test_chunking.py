@@ -48,3 +48,11 @@ def test_chunk_ids_unique():
     chunks = chunk_profile(make_profile())
     ids = [c.chunk_id for c in chunks]
     assert len(ids) == len(set(ids))
+
+def test_experience_summary_becomes_summary_chunk():
+    profile = make_profile()
+    profile.experience_summary = "Aspiring developer. Strong grasp of APIs."
+    chunks = chunk_profile(profile)
+    summary = [c for c in chunks if c.kind == "summary"]
+    assert [c.chunk_id for c in summary] == ["summary"]
+    assert not any(c.kind == "experience" for c in chunks)

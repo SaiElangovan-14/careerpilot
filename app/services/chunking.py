@@ -4,6 +4,8 @@ from pydantic import BaseModel
 
 from app.services.llm_resume_parser import ResumeProfile
 
+CHUNKER_VERSION = 2
+
 
 class Chunk(BaseModel):
     chunk_id: str
@@ -64,11 +66,11 @@ def chunk_profile(profile: ResumeProfile) -> list[Chunk]:
     if profile.experience_summary:
         chunks.append(
             Chunk(
-                chunk_id="experience",
-                kind="experience",
-                title="Experience",
+                chunk_id="summary",
+                kind="summary",
+                title="Summary",
                 text=profile.experience_summary,
             )
         )
-
+        
     return chunks
