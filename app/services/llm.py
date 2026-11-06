@@ -9,7 +9,8 @@ from pydantic import BaseModel
 load_dotenv()
 
 MODELS = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash"]
-RETRIES_PER_MODEL = 1
+ROUNDS = 3
+BACKOFF_SECONDS = [5, 15]  # wait after round 1, then after round 2
 
 _client = None
 
@@ -23,10 +24,19 @@ def get_client() -> genai.Client:
         )
     return _client
 
+def _is_quota_error(error: Exception) -> bool:
+    text = str(error)
+    return "429" in text or "RESOURCE_EXHAUSTED" in text
+
+
 def _generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
     last_error = None
-    for model in MODELS:
-        for attempt in range(RETRIES_PER_MODEL):
+    out_of_quota: set[str] = set()
+
+    for round_number in range(ROUNDS):
+        for model in MODELS:
+            if model in out_of_quota:
+                continue
             try:
                 response = get_client().models.generate_content(
                     model=model,
@@ -42,9 +52,15 @@ def _generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
                 return response.parsed
             except Exception as e:
                 last_error = e
-                time.sleep(2 * (attempt + 1))
-    raise RuntimeError(f"All models failed: {last_error}")
+                if _is_quota_error(e):
+                    out_of_quota.add(model)
 
+        if len(out_of_quota) == len(MODELS):
+            break
+        if round_number < ROUNDS - 1:
+            time.sleep(BACKOFF_SECONDS[round_number])
+
+    raise RuntimeError(f"All models failed: {last_error}")
 
 import hashlib
 import json
