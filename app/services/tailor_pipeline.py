@@ -3,7 +3,12 @@ from pydantic import BaseModel
 from app.services.judge import judge_bullet
 from app.services.llm_resume_parser import ResumeProfile
 from app.services.repair import rewrite_bullet
-from app.services.tailor import TailoredBullet, TailoredResume, tailor_resume
+from app.services.tailor import (
+    TailoredBullet,
+    TailoredResume,
+    tailor_resume,
+    tailor_resume_rag,
+)
 from app.services.tailor_check import BulletCheck, check_bullets
 
 
@@ -34,11 +39,9 @@ def _verify(
     return check
 
 
-def tailor_and_verify(
-    profile: ResumeProfile, job_title: str, job_description: str
+def _verify_result(
+    profile: ResumeProfile, result: TailoredResume, job_title: str
 ) -> TailorReport:
-    result = tailor_resume(profile, job_title, job_description)
-
     kept: list[BulletCheck] = []
     rejected: list[BulletCheck] = []
     for bullet in result.bullets:
@@ -64,3 +67,17 @@ def tailor_and_verify(
         matched_skills=result.matched_skills,
         missing_skills=result.missing_skills,
     )
+
+
+def tailor_and_verify(
+    profile: ResumeProfile, job_title: str, job_description: str
+) -> TailorReport:
+    result = tailor_resume(profile, job_title, job_description)
+    return _verify_result(profile, result, job_title)
+
+
+def tailor_and_verify_rag(
+    profile: ResumeProfile, chunks, job_title: str, job_description: str
+) -> TailorReport:
+    result = tailor_resume_rag(chunks, profile.skills, job_title, job_description)
+    return _verify_result(profile, result, job_title)
