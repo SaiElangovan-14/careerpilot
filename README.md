@@ -62,3 +62,26 @@ An LLM judge checks every generated resume bullet against the source fact it cit
 | Faithful bullets wrongly flagged | 0 / 10 |
 
 Caveats: the set is small, and the skill-level rule was added after the judge missed one case, so this is a regression test and not a general accuracy claim. Next: a larger set built from real job postings.
+
+## Retrieval-augmented generation (RAG)
+
+CareerPilot grounds every generated resume bullet in retrieved facts from the candidate's own resume.
+
+**Pipeline**
+1. The parsed resume is split into sentence-level fact chunks (`project-0-1`, ...), each with a kind (`project`, `tech`, `skills`, `education`, `summary`).
+2. Chunks are embedded with `bge-small-en-v1.5` and stored in Postgres with pgvector. Ingest is idempotent: the resume id is a hash of the profile plus the chunker version.
+3. For a job, hybrid retrieval (Postgres full-text + vector search, fused with Reciprocal Rank Fusion) returns the most relevant project facts.
+4. The generator sees only those facts, each labelled with its id, and must cite a chunk id per bullet. Unknown ids are dropped.
+5. Every bullet is then verified against its cited chunk: token-overlap grounding, an unsupported-number check, a skill-claim check, and an LLM judge. Failing bullets get one repair attempt, then are rejected.
+
+**Retrieval eval** (8 labelled jobs against a synthetic resume, recall@5 / MRR):
+
+| mode | before `tech` chunk fix | after |
+|---|---|---|
+| keyword | 0.86 / 0.94 | 0.90 / 1.00 |
+| vector | 0.89 / 0.92 | 0.96 / 1.00 |
+| hybrid | 0.97 / 0.85 | **1.00 / 1.00** |
+
+The fix: technology lists were crowding the real facts out of the top results, so they now have their own chunk kind and are excluded from bullet context. A cross-encoder reranker was also tried and did not beat hybrid, so it is not used.
+
+**Caveats:** the eval set is small (8 jobs) and synthetic, and I changed the chunker after seeing it, so it is partly tuned to it. A larger set with real jobs is the next step. Run it with `python -m evals.retrieval_eval` (no API calls).
