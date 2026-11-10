@@ -56,3 +56,28 @@ def test_claim_without_valid_evidence_becomes_a_gap(monkeypatch):
     assert [i.status for i in report.items] == ["gap", "gap"]
     assert report.gaps == 2
     assert report.supported == 0
+
+def test_skill_listed_but_no_project_evidence_is_partial(monkeypatch):
+    model = fit.FitModel(
+        requirements=[
+            fit.RequirementFit(
+                requirement="FastAPI",
+                status="gap",
+                evidence_ids=[],
+                note="Not in any project.",
+            ),
+            fit.RequirementFit(
+                requirement="Kubernetes",
+                status="gap",
+                evidence_ids=[],
+                note="Not in any project.",
+            ),
+        ]
+    )
+    monkeypatch.setattr(fit, "generate_structured", lambda prompt, schema: model)
+
+    report = fit.analyze_fit(CHUNKS, ["FastAPI", "Python"], "Backend Intern", "Needs FastAPI")
+
+    assert [i.status for i in report.items] == ["partial", "gap"]
+    assert report.partial == 1
+    assert report.gaps == 1

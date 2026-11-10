@@ -18,6 +18,7 @@ from app.services.resume_parser import extract_pdf_text, parse_resume_text
 from app.services.tailor_pipeline import TailorReport, tailor_and_verify, tailor_and_verify_rag
 from app.services.cover_letter import LetterReport, draft_and_verify_letter, frame_letter
 from app.services.rag_pipeline import build_context
+from app.services.fit import FitReport, analyze_fit
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -165,6 +166,21 @@ def cover_letter_endpoint(
         report = draft_and_verify_letter(profile, job.title, job.description)
         report.letter = frame_letter(report.body, job.title, job.company, profile.name)
         return report
+    except RuntimeError as e:
+        logger.warning("LLM call failed: %s", e)
+        raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")
+
+@app.post("/fit", response_model=FitReport)
+def fit_endpoint(
+    job_id: int = Form(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    job, profile = _read_job_and_profile(db, job_id, file)
+
+    try:
+        chunks = build_context(db, profile, job, top_k=8)
+        return analyze_fit(chunks, profile.skills, job.title, job.description)
     except RuntimeError as e:
         logger.warning("LLM call failed: %s", e)
         raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")
