@@ -85,3 +85,10 @@ CareerPilot grounds every generated resume bullet in retrieved facts from the ca
 The fix: technology lists were crowding the real facts out of the top results, so they now have their own chunk kind and are excluded from bullet context. A cross-encoder reranker was also tried and did not beat hybrid, so it is not used.
 
 **Caveats:** the eval set is small (8 jobs) and synthetic, and I changed the chunker after seeing it, so it is partly tuned to it. A larger set with real jobs is the next step. Run it with `python -m evals.retrieval_eval` (no API calls).
+
+Live check (1 job, 1 real resume, Gemini): both modes pass verification. RAG mode
+attributes each bullet to a named project and produces a more specific summary; bullet
+text is otherwise similar. With a resume of ~10 facts, retrieval is not selective, so
+this is a sanity check, not a quality benchmark. Retrieval quality is measured
+separately in evals/retrieval_eval.py (8 synthetic jobs; small, and the chunker was
+tuned after seeing results).
