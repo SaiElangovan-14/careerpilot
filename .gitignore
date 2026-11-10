@@ -6,3 +6,9 @@ __pycache__/
 out.txt
 evals/.judge_cache.json
 .llm_cache.json
+try*.py
+ping_llm.py
+check_models.py
+out.txt
+.llm_cache.json
+.env
