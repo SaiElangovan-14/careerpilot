@@ -29,13 +29,18 @@ def _is_quota_error(error: Exception) -> bool:
     return "429" in text or "RESOURCE_EXHAUSTED" in text
 
 
+def _is_timeout_error(error: Exception) -> bool:
+    text = str(error)
+    return "504" in text or "DEADLINE_EXCEEDED" in text
+
+
 def _generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
     last_error = None
-    out_of_quota: set[str] = set()
+    skipped: set[str] = set()  # out of quota or timing out: not worth retrying this request
 
     for round_number in range(ROUNDS):
         for model in MODELS:
-            if model in out_of_quota:
+            if model in skipped:
                 continue
             try:
                 response = get_client().models.generate_content(
@@ -52,10 +57,10 @@ def _generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
                 return response.parsed
             except Exception as e:
                 last_error = e
-                if _is_quota_error(e):
-                    out_of_quota.add(model)
+                if _is_quota_error(e) or _is_timeout_error(e):
+                    skipped.add(model)
 
-        if len(out_of_quota) == len(MODELS):
+        if len(skipped) == len(MODELS):
             break
         if round_number < ROUNDS - 1:
             time.sleep(BACKOFF_SECONDS[round_number])

@@ -60,3 +60,25 @@ def test_gives_up_after_all_rounds(monkeypatch):
         llm._generate_uncached("p", Out)
     assert len(client.calls) == 9
     assert sleeps == [5, 15]
+
+def test_model_that_times_out_is_skipped_for_the_rest_of_the_request(monkeypatch):
+    from types import SimpleNamespace
+
+    from app.services import llm
+
+    calls = []
+
+    def fake_generate_content(model, contents, config):
+        calls.append(model)
+        if model == llm.MODELS[0]:
+            raise RuntimeError("504 DEADLINE_EXCEEDED")
+        return SimpleNamespace(parsed="ok")
+
+    fake_client = SimpleNamespace(models=SimpleNamespace(generate_content=fake_generate_content))
+    monkeypatch.setattr(llm, "get_client", lambda: fake_client)
+    monkeypatch.setattr(llm.time, "sleep", lambda seconds: None)
+
+    result = llm._generate_uncached("prompt", object)
+
+    assert result == "ok"
+    assert calls == [llm.MODELS[0], llm.MODELS[1]]

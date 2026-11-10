@@ -15,8 +15,9 @@ from app.services.embeddings import embed
 from app.services.retrieval import hybrid_search
 from app.services.resume_profile import build_profile
 from app.services.resume_parser import extract_pdf_text, parse_resume_text
-from app.services.tailor_pipeline import TailorReport, tailor_and_verify
+from app.services.tailor_pipeline import TailorReport, tailor_and_verify, tailor_and_verify_rag
 from app.services.cover_letter import LetterReport, draft_and_verify_letter, frame_letter
+from app.services.rag_pipeline import build_context
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -136,12 +137,16 @@ def _read_job_and_profile(db: Session, job_id: int, file: UploadFile):
 @app.post("/tailor", response_model=TailorReport)
 def tailor(
     job_id: int = Form(...),
+    use_rag: bool = Form(True),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
     job, profile = _read_job_and_profile(db, job_id, file)
 
     try:
+        if use_rag:
+            chunks = build_context(db, profile, job)
+            return tailor_and_verify_rag(profile, chunks, job.title, job.description)
         return tailor_and_verify(profile, job.title, job.description)
     except RuntimeError as e:
         logger.warning("LLM call failed: %s", e)
