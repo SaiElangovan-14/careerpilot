@@ -100,3 +100,11 @@ mapped to real resume text in code; a claim of support with no valid evidence is
 downgraded to a gap, and a skill that appears only in the skills list is capped at
 partial. Live check (2 jobs, 1 real resume): Backend Intern -> 4 supported, 2 partial,
 0 gaps; Frontend Developer -> 0 supported, 0 partial, 5 gaps. Small sample, one resume.
+
+### Cover letter (`POST /cover-letter`)
+Retrieves the most relevant resume facts, asks the model for sentences that each cite
+one fact id, maps ids back to resume text, then runs the same verification as bullets
+(grounding, numbers, skill claims, judge). Live check (1 job, 1 resume): RAG mode kept
+4/4 sentences; classic mode kept 3/4 and rejected a sentence that claimed the project
+"aligns with the job's requirements". Known limitation: because relevance claims are
+rejected, letters read as a list of verified facts rather than persuasive prose.
