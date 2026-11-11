@@ -92,3 +92,11 @@ text is otherwise similar. With a resume of ~10 facts, retrieval is not selectiv
 this is a sanity check, not a quality benchmark. Retrieval quality is measured
 separately in evals/retrieval_eval.py (8 synthetic jobs; small, and the chunker was
 tuned after seeing results).
+
+### Fit and gaps (`POST /fit`)
+For a job, lists the main requirements and marks each supported / partial / gap,
+citing the resume sentences that back it up. Evidence ids returned by the model are
+mapped to real resume text in code; a claim of support with no valid evidence is
+downgraded to a gap, and a skill that appears only in the skills list is capped at
+partial. Live check (2 jobs, 1 real resume): Backend Intern -> 4 supported, 2 partial,
+0 gaps; Frontend Developer -> 0 supported, 0 partial, 5 gaps. Small sample, one resume.
