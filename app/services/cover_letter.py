@@ -188,5 +188,7 @@ def frame_letter(
         return ""
     at = f" at {company}" if company else ""
     intro = f"I am applying for the {job_title} position{at}."
+    if name and name.isupper():
+        name = name.title()
     sign = name or "Applicant"
     return f"Dear Hiring Team,\n\n{intro} {body}\n\nSincerely,\n{sign}"
