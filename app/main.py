@@ -16,7 +16,12 @@ from app.services.retrieval import hybrid_search
 from app.services.resume_profile import build_profile
 from app.services.resume_parser import extract_pdf_text, parse_resume_text
 from app.services.tailor_pipeline import TailorReport, tailor_and_verify, tailor_and_verify_rag
-from app.services.cover_letter import LetterReport, draft_and_verify_letter, frame_letter
+from app.services.cover_letter import (
+    LetterReport,
+    draft_and_verify_letter,
+    draft_and_verify_letter_rag,
+    frame_letter,
+)
 from app.services.rag_pipeline import build_context
 from app.services.fit import FitReport, analyze_fit
 
@@ -157,13 +162,18 @@ def tailor(
 @app.post("/cover-letter", response_model=LetterReport)
 def cover_letter_endpoint(
     job_id: int = Form(...),
+    use_rag: bool = Form(True),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
     job, profile = _read_job_and_profile(db, job_id, file)
 
     try:
-        report = draft_and_verify_letter(profile, job.title, job.description)
+        if use_rag:
+            chunks = build_context(db, profile, job)
+            report = draft_and_verify_letter_rag(profile, chunks, job.title, job.description)
+        else:
+            report = draft_and_verify_letter(profile, job.title, job.description)
         report.letter = frame_letter(report.body, job.title, job.company, profile.name)
         return report
     except RuntimeError as e:
