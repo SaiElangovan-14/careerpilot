@@ -114,3 +114,12 @@ one fact id, maps ids back to resume text, then runs the same verification as bu
 "aligns with the job's requirements". Known limitation: because relevance claims are
 rejected, letters read as a list of verified facts rather than persuasive prose.
 
+### Security
+- AI and write endpoints require an `X-API-Key` header (`CAREERPILOT_API_KEY` in `.env`).
+  The server refuses to run open: with no key configured, protected routes return 503.
+  Keys are compared in constant time.
+- AI endpoints are rate limited (10 requests per minute per client, 429 with Retry-After).
+  Known limit: the counters are in memory, so they reset on restart and are not shared
+  across processes; a real deployment would use Redis.
+- Resume and job text is treated as untrusted data in every prompt, and every generated
+  sentence is verified against the resume before it is returned.
