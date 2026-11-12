@@ -23,6 +23,7 @@ from app.services.cover_letter import (
     frame_letter,
 )
 from app.services.rag_pipeline import build_context
+from app.services.rag_context import FIT_KINDS
 from app.services.fit import FitReport, analyze_fit
 from app.services.knowledge import add_knowledge, load_facts
 
@@ -191,7 +192,7 @@ def fit_endpoint(
     job, profile = _read_job_and_profile(db, job_id, file)
 
     try:
-        chunks = build_context(db, profile, job, top_k=8)
+        chunks = build_context(db, profile, job, top_k=8, kinds=FIT_KINDS)
         return analyze_fit(chunks, profile.skills, job.title, job.description)
     except RuntimeError as e:
         logger.warning("LLM call failed: %s", e)
