@@ -27,6 +27,7 @@ from app.services.rag_context import FIT_KINDS
 from app.services.fit import FitReport, analyze_fit
 from app.services.knowledge import add_knowledge, load_facts
 from app.security import require_api_key
+from app.ratelimit import limit_ai
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -144,7 +145,7 @@ def _read_job_and_profile(db: Session, job_id: int, file: UploadFile):
     profile = add_knowledge(profile, load_facts())
     return job, profile
 
-@app.post("/tailor", response_model=TailorReport, dependencies=[Depends(require_api_key)])
+@app.post("/tailor", response_model=TailorReport, dependencies=[Depends(require_api_key), Depends(limit_ai)])
 def tailor(
     job_id: int = Form(...),
     use_rag: bool = Form(True),
@@ -163,7 +164,7 @@ def tailor(
         raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")
 
 
-@app.post("/cover-letter", response_model=LetterReport, dependencies=[Depends(require_api_key)])
+@app.post("/cover-letter", response_model=LetterReport, dependencies=[Depends(require_api_key), Depends(limit_ai)])
 def cover_letter_endpoint(
     job_id: int = Form(...),
     use_rag: bool = Form(True),
@@ -184,7 +185,7 @@ def cover_letter_endpoint(
         logger.warning("LLM call failed: %s", e)
         raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")
 
-@app.post("/fit", response_model=FitReport, dependencies=[Depends(require_api_key)])
+@app.post("/fit", response_model=FitReport, dependencies=[Depends(require_api_key), Depends(limit_ai)])
 def fit_endpoint(
     job_id: int = Form(...),
     file: UploadFile = File(...),
