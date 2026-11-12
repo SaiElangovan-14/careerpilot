@@ -26,6 +26,7 @@ from app.services.rag_pipeline import build_context
 from app.services.rag_context import FIT_KINDS
 from app.services.fit import FitReport, analyze_fit
 from app.services.knowledge import add_knowledge, load_facts
+from app.security import require_api_key
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -54,7 +55,7 @@ class JobOut(BaseModel):
 def health():
     return {"status": "ok"}
 
-@app.post("/jobs", status_code=201)
+@app.post("/jobs", status_code=201, dependencies=[Depends(require_api_key)])
 def add_jobs(jobs:list[JobIn], db: Session = Depends(get_db)):
     vectors = embed([f"{j.title} {j.description}" for j in jobs])
     for job,vec in zip(jobs,vectors):
@@ -85,7 +86,7 @@ def search(
 MAX_PDF_BYTES = 5 * 1024 * 1024  # 5 MB
 
 
-@app.post("/resumes")
+@app.post("/resumes", dependencies=[Depends(require_api_key)])
 def match_resume(
     file: UploadFile = File(...),
     top_k: int = Query(5, ge=1, le=20),
@@ -143,7 +144,7 @@ def _read_job_and_profile(db: Session, job_id: int, file: UploadFile):
     profile = add_knowledge(profile, load_facts())
     return job, profile
 
-@app.post("/tailor", response_model=TailorReport)
+@app.post("/tailor", response_model=TailorReport, dependencies=[Depends(require_api_key)])
 def tailor(
     job_id: int = Form(...),
     use_rag: bool = Form(True),
@@ -162,7 +163,7 @@ def tailor(
         raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")
 
 
-@app.post("/cover-letter", response_model=LetterReport)
+@app.post("/cover-letter", response_model=LetterReport, dependencies=[Depends(require_api_key)])
 def cover_letter_endpoint(
     job_id: int = Form(...),
     use_rag: bool = Form(True),
@@ -183,7 +184,7 @@ def cover_letter_endpoint(
         logger.warning("LLM call failed: %s", e)
         raise HTTPException(status_code=503, detail="The AI service is busy, try again shortly")
 
-@app.post("/fit", response_model=FitReport)
+@app.post("/fit", response_model=FitReport, dependencies=[Depends(require_api_key)])
 def fit_endpoint(
     job_id: int = Form(...),
     file: UploadFile = File(...),
