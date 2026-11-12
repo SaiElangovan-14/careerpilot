@@ -24,6 +24,7 @@ from app.services.cover_letter import (
 )
 from app.services.rag_pipeline import build_context
 from app.services.fit import FitReport, analyze_fit
+from app.services.knowledge import add_knowledge, load_facts
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -138,6 +139,7 @@ def _read_job_and_profile(db: Session, job_id: int, file: UploadFile):
         raise HTTPException(status_code=422, detail="No text found in PDF")
 
     profile, _parser = build_profile(text)
+    profile = add_knowledge(profile, load_facts())
     return job, profile
 
 @app.post("/tailor", response_model=TailorReport)
