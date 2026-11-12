@@ -101,6 +101,11 @@ downgraded to a gap, and a skill that appears only in the skills list is capped 
 partial. Live check (2 jobs, 1 real resume): Backend Intern -> 4 supported, 2 partial,
 0 gaps; Frontend Developer -> 0 supported, 0 partial, 5 gaps. Small sample, one resume.
 
+Knowledge file: extra true facts per project (knowledge/projects.txt) are merged into the
+parsed profile, so retrieval, citation and verification all see them. Live check (Backend
+Intern, 1 resume): Python and FastAPI moved from partial to supported once the file listed
+them as technologies. Technology lists count as weaker evidence than described work.
+
 ### Cover letter (`POST /cover-letter`)
 Retrieves the most relevant resume facts, asks the model for sentences that each cite
 one fact id, maps ids back to resume text, then runs the same verification as bullets
@@ -108,3 +113,4 @@ one fact id, maps ids back to resume text, then runs the same verification as bu
 4/4 sentences; classic mode kept 3/4 and rejected a sentence that claimed the project
 "aligns with the job's requirements". Known limitation: because relevance claims are
 rejected, letters read as a list of verified facts rather than persuasive prose.
+
