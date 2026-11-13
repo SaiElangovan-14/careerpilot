@@ -1,0 +1,30 @@
+{
+  "resume_file": "evals/data/real_resume.json",
+  "cases": [
+    {
+      "title": "Backend Engineer Intern",
+      "description": "Design, develop and maintain backend features. Develop REST APIs and gRPC services. Manage IoT device data and real-time data streams. Integrate backend APIs with frontend applications. Research and implement backend improvements. Test and validate features for performance and reliability. Maintain technical documentation.",
+      "relevant": ["project-1-2", "project-0-1", "project-0-2", "project-1-3"]
+    },
+    {
+      "title": "AI Developer Intern - Full Stack Python and AI Agents",
+      "description": "Build AI-powered SaaS applications. Develop custom AI agents. Build backend applications using Python, Django or FastAPI. Integrate LLMs and third-party APIs. Work with databases and automation workflows. Develop multi-step AI agent workflows. Test, debug and deploy applications. Build practical software features based on customer requirements. Required skills: Python, Django / FastAPI, REST APIs, SQL, HTML, CSS and JavaScript, basic understanding of LLMs and Generative AI.",
+      "relevant": ["project-1-2", "project-0-1", "project-0-2", "project-0-3"]
+    },
+    {
+      "title": "Associate Software Development Engineer Intern",
+      "description": "Develop backend and full-stack features. Build and maintain APIs. Create data pipelines. Develop analytics dashboards. Integrate AI/LLM features into products. Work with real-world business data. Implement RAG-based question answering and summarization. Work directly with founders on product development. Required skills: TypeScript, Python, Django or Node.js, SQL / NoSQL, basic LangChain or RAG knowledge, data analysis.",
+      "relevant": ["project-1-2", "project-0-1", "project-0-0", "project-1-0"]
+    },
+    {
+      "title": "Python Intern - AI Developer",
+      "description": "Develop Python-based applications and backend modules. Build REST APIs using FastAPI or Flask. Work with local LLMs and open-source AI models. Develop Retrieval-Augmented Generation (RAG) systems. Work on OCR and document intelligence. Extract and process information from PDFs and images. Integrate AI models with backend applications. Implement document processing and automation solutions. Required skills: Python, FastAPI / Flask, REST APIs, basic AI/ML, LLM fundamentals, OCR and document processing.",
+      "relevant": ["project-1-2", "project-0-1", "project-0-2"]
+    },
+    {
+      "title": "Python Developer Intern",
+      "description": "Develop and maintain web applications using Python. Work with Django, Flask or FastAPI. Develop and integrate REST APIs. Write clean and reusable Python code. Work with MySQL, PostgreSQL or MongoDB. Debug and troubleshoot application issues. Participate in software testing. Work with Git, Docker and Linux. Collaborate with the development team. Required skills: Python, Django / Flask / FastAPI, REST API development, SQL / PostgreSQL, Git and GitHub, basic Linux knowledge.",
+      "relevant": ["project-1-2", "project-0-3", "project-0-4", "project-0-2", "project-1-3"]
+    }
+  ]
+}

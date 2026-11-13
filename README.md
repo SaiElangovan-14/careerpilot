@@ -86,6 +86,19 @@ The fix: technology lists were crowding the real facts out of the top results, s
 
 **Caveats:** the eval set is small (8 jobs) and synthetic, and I changed the chunker after seeing it, so it is partly tuned to it. A larger set with real jobs is the next step. Run it with `python -m evals.retrieval_eval` (no API calls).
 
+Real postings (5 internship postings, 1 real resume, 13 candidate chunks; labels written
+before running; random baseline recall@5 ~ 0.38):
+
+| mode | recall@5 | MRR |
+|---|---|---|
+| keyword | 0.74 | 1.00 |
+| vector | 0.66 | 0.55 |
+| hybrid | 0.64 | 0.90 |
+
+Hybrid did not beat keyword on real postings, unlike on the synthetic set. With 5 jobs
+the differences are about one chunk, so I treat this as inconclusive. Next step: more
+postings and a second resume before changing the retriever.
+
 Live check (1 job, 1 real resume, Gemini): both modes pass verification. RAG mode
 attributes each bullet to a named project and produces a more specific summary; bullet
 text is otherwise similar. With a resume of ~10 facts, retrieval is not selective, so

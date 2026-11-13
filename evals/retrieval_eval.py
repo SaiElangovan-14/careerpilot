@@ -1,4 +1,5 @@
 import json
+import sys
 
 from sqlalchemy import delete
 
@@ -26,10 +27,16 @@ def reciprocal_rank(ranked: list[str], relevant: list[str]) -> float:
 
 
 def main() -> None:
-    with open(DATA_PATH, encoding="utf-8") as f:
+    path = sys.argv[1] if len(sys.argv) > 1 else DATA_PATH
+    with open(path, encoding="utf-8") as f:
         data = json.load(f)
 
-    profile = ResumeProfile.model_validate(data["resume"])
+    if "resume_file" in data:
+        with open(data["resume_file"], encoding="utf-8") as rf:
+            resume = json.load(rf)
+    else:
+        resume = data["resume"]
+    profile = ResumeProfile.model_validate(resume)
     chunks = chunk_profile(profile)
 
     known = {c.chunk_id for c in chunks}
@@ -60,6 +67,8 @@ def main() -> None:
                 totals[mode]["recall"] += recall
                 totals[mode]["mrr"] += rr
                 print(f"  {mode:8} recall@{K}={recall:.2f} rr={rr:.2f} {ranked}")
+                pool = sum(1 for c in chunks if c.kind in KINDS)
+                print(f"  chance    recall@{K}~{min(K, pool) / pool:.2f}  ({pool} candidate chunks)")
 
     n = len(data["cases"])
     print("\nSUMMARY")
