@@ -1,8 +1,5 @@
 # Project name | fact   (use "tech:" for languages and frameworks)
 TenantCore | tech: Python, FastAPI, PostgreSQL, SQLAlchemy, JWT, Pytest, Docker
-TenantCore | Built a multi-tenant SaaS backend as my first backend project.
-TenantCore | Implemented JWT authentication and role-based access control (RBAC).
 Job Board API | tech: Python, FastAPI, PostgreSQL, SQLAlchemy, JWT, Cloudinary, Pytest, Docker
-Job Board API | Supports two user types, Employers and Candidates, including resume upload.
 Job Board API | Resolved Python 3.14 compatibility issues with psycopg2, SQLAlchemy, Pydantic and bcrypt by pinning versions.
 Job Board API | Fixed a bcrypt and passlib version conflict while setting up Docker on Windows with WSL2.

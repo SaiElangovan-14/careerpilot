@@ -29,7 +29,7 @@
   "projects": [
     {
       "name": "Job Board API",
-      "description": "Built a dual-role job platform backend supporting Employer and Candidate accounts with JWT authentication and ownership-based access control. Implemented job posting CRUD, search/filter/pagination, and an application workflow with status tracking (applied, reviewed, accepted, rejected). Integrated Cloudinary for resume uploads and wrote a Pytest suite covering 20 passing tests across auth, job, and application flows. Containerized the application with Docker, resolving WSL2/virtualization and dependency issues for a reproducible local environment. Supports two user types, Employers and Candidates, including resume upload. Resolved Python 3.14 compatibility issues with psycopg2, SQLAlchemy, Pydantic and bcrypt by pinning versions. Fixed a bcrypt and passlib version conflict while setting up Docker on Windows with WSL2.",
+      "description": "Built a dual-role job platform backend supporting Employer and Candidate accounts with JWT authentication and ownership-based access control. Implemented job posting CRUD, search/filter/pagination, and an application workflow with status tracking (applied, reviewed, accepted, rejected). Integrated Cloudinary for resume uploads and wrote a Pytest suite covering 20 passing tests across auth, job, and application flows. Containerized the application with Docker, resolving WSL2/virtualization and dependency issues for a reproducible local environment. Resolved Python 3.14 compatibility issues with psycopg2, SQLAlchemy, Pydantic and bcrypt by pinning versions. Fixed a bcrypt and passlib version conflict while setting up Docker on Windows with WSL2.",
       "technologies": [
         "Python",
         "FastAPI",
@@ -43,7 +43,7 @@
     },
     {
       "name": "TenantCore",
-      "description": "Designed a multi-tenant SaaS backend with Admin and Member roles, enforcing tenant-scoped data isolation and role-based access control. Implemented secure authentication using bcrypt password hashing and JWT-based session management. Built RESTful APIs with SQLAlchemy ORM over PostgreSQL, validated with Pydantic schemas. Wrote a Pytest test suite and containerized the service with Docker; published to GitHub with full setup documentation. Built a multi-tenant SaaS backend as my first backend project. Implemented JWT authentication and role-based access control (RBAC).",
+      "description": "Designed a multi-tenant SaaS backend with Admin and Member roles, enforcing tenant-scoped data isolation and role-based access control. Implemented secure authentication using bcrypt password hashing and JWT-based session management. Built RESTful APIs with SQLAlchemy ORM over PostgreSQL, validated with Pydantic schemas. Wrote a Pytest test suite and containerized the service with Docker; published to GitHub with full setup documentation.",
       "technologies": [
         "Python",
         "FastAPI",

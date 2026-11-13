@@ -1,0 +1,15 @@
+﻿project-0-0 | project | Job Board API: Built a dual-role job platform backend supporting Employer and Candidate accounts with JWT authentication and ownership-based access control.
+project-0-1 | project | Job Board API: Implemented job posting CRUD, search/filter/pagination, and an application workflow with status tracking (applied, reviewed, accepted, rejected).
+project-0-2 | project | Job Board API: Integrated Cloudinary for resume uploads and wrote a Pytest suite covering 20 passing tests across auth, job, and application flows.
+project-0-3 | project | Job Board API: Containerized the application with Docker, resolving WSL2/virtualization and dependency issues for a reproducible local environment.
+project-0-4 | project | Job Board API: Resolved Python 3.14 compatibility issues with psycopg2, SQLAlchemy, Pydantic and bcrypt by pinning versions.
+project-0-5 | project | Job Board API: Fixed a bcrypt and passlib version conflict while setting up Docker on Windows with WSL2.
+project-0-tech | tech | Job Board API technologies: Python, FastAPI, PostgreSQL, SQLAlchemy, Docker, JWT, Cloudinary, Pytest
+project-1-0 | project | TenantCore: Designed a multi-tenant SaaS backend with Admin and Member roles, enforcing tenant-scoped data isolation and role-based access control.
+project-1-1 | project | TenantCore: Implemented secure authentication using bcrypt password hashing and JWT-based session management.
+project-1-2 | project | TenantCore: Built RESTful APIs with SQLAlchemy ORM over PostgreSQL, validated with Pydantic schemas.
+project-1-3 | project | TenantCore: Wrote a Pytest test suite and containerized the service with Docker; published to GitHub with full setup documentation.
+project-1-tech | tech | TenantCore technologies: Python, FastAPI, PostgreSQL, SQLAlchemy, Docker, bcrypt, JWT, Pydantic, Pytest, GitHub
+skills | skills | Skills: Python, SQL, FastAPI, SQLAlchemy, Pydantic, Pytest, PostgreSQL, Docker, Git, GitHub, Cloudinary, JWT, bcrypt, REST API Design, Authentication & Authorization, Database Modeling
+education-0 | education | Bachelor of Engineering, Electronics and Communication Engineering, Rajalakshmi Institute of Technology Chennai, Tamil Nadu (2026)
+summary | summary | Aspiring Backend Developer and fresh graduate with hands-on experience building production-style backend systems through self-directed, curriculum-based projects. Skilled in Python, FastAPI, and PostgreSQL, with a strong grasp of authentication, role-based access control, and RESTful API design. Comfortable working across the full backend lifecycle: schema design, testing, containerization, and deployment.
