@@ -86,18 +86,21 @@ The fix: technology lists were crowding the real facts out of the top results, s
 
 **Caveats:** the eval set is small (8 jobs) and synthetic, and I changed the chunker after seeing it, so it is partly tuned to it. A larger set with real jobs is the next step. Run it with `python -m evals.retrieval_eval` (no API calls).
 
-Real postings (5 internship postings, 1 real resume, 13 candidate chunks; labels written
-before running; random baseline recall@5 ~ 0.38):
+Real postings (5 internship postings, 1 real resume, 10 candidate chunks; relevance
+labels were written by me before running; random baseline recall@5 ~ 0.50):
 
 | mode | recall@5 | MRR |
 |---|---|---|
-| keyword | 0.74 | 1.00 |
-| vector | 0.66 | 0.55 |
-| hybrid | 0.64 | 0.90 |
+| keyword | 0.83 | 0.90 |
+| vector | 0.71 | 0.67 |
+| hybrid | 0.73 | 1.00 |
 
-Hybrid did not beat keyword on real postings, unlike on the synthetic set. With 5 jobs
-the differences are about one chunk, so I treat this as inconclusive. Next step: more
-postings and a second resume before changing the retriever.
+Hybrid ranks a relevant chunk first for every posting (MRR 1.00), but keyword has
+slightly higher recall@5 (0.83 vs 0.73), unlike on the synthetic set. Across 20 labeled
+chunks that is a 2-chunk gap, so I treat the recall difference as inconclusive. The
+earlier run of this eval was discarded: duplicate chunks had shifted the ids, so the
+labels pointed at the wrong chunks. Next: more postings and a second resume before
+changing the retriever.
 
 Live check (1 job, 1 real resume, Gemini): both modes pass verification. RAG mode
 attributes each bullet to a named project and produces a more specific summary; bullet
