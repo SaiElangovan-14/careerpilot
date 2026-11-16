@@ -1,11 +1,13 @@
 import logging
+import time
+import uuid
 
 logger = logging.getLogger("careerpilot")
 
 from contextlib import asynccontextmanager
 from typing import Literal
 
-from fastapi import Depends, FastAPI 
+from fastapi import Depends, FastAPI, Request
 from fastapi import File, Form, HTTPException,Query, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session 
@@ -36,6 +38,38 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title="CareerPilot", lifespan=lifespan)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
+
+for noisy in ("httpx", "httpx2", "httpcore", "huggingface_hub"):
+    logging.getLogger(noisy).setLevel(logging.WARNING)
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    request_id = uuid.uuid4().hex[:8]
+    start = time.perf_counter()
+    try:
+        response = await call_next(request)
+    except Exception:
+        elapsed_ms = (time.perf_counter() - start) * 1000
+        logger.exception(
+            "%s %s %s 500 %.0fms", request_id, request.method, request.url.path, elapsed_ms
+        )
+        raise
+    elapsed_ms = (time.perf_counter() - start) * 1000
+    logger.info(
+        "%s %s %s %d %.0fms",
+        request_id,
+        request.method,
+        request.url.path,
+        response.status_code,
+        elapsed_ms,
+    )
+    response.headers["X-Request-ID"] = request_id
+    return response
 
 def get_db():
     with SessionLocal() as session:

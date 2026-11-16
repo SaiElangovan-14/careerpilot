@@ -22,9 +22,12 @@ services:
       DATABASE_URL: postgresql+psycopg2://careerpilot:careerpilot@db:5432/careerpilot
     ports:
       - "8001:8000"
+    volumes:
+      - hf_cache:/root/.cache/huggingface
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   pgdata:
+  hf_cache:
