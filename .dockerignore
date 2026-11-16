@@ -1,0 +1,14 @@
+.env
+.git
+.gitignore
+.llm_cache.json
+.pytest_cache
+__pycache__
+*.pyc
+.venv
+venv
+chunks.txt
+try_*.py
+ping_llm.py
+check_models.py
+evals/data
