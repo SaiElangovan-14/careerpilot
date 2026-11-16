@@ -63,6 +63,32 @@ An LLM judge checks every generated resume bullet against the source fact it cit
 
 Caveats: the set is small, and the skill-level rule was added after the judge missed one case, so this is a regression test and not a general accuracy claim. Next: a larger set built from real job postings.
 
+## Run with Docker
+
+The API and Postgres (with pgvector) run together with one command.
+
+1. Create a `.env` file next to `docker-compose.yml`:
+
+```
+GEMINI_API_KEY=your-gemini-key
+CAREERPILOT_API_KEY=any-long-random-string
+```
+
+2. Start everything:
+
+```
+docker compose up --build
+```
+
+3. Open http://localhost:8001/docs. The API is mapped to port 8001 on your machine
+   (8000 inside the container). `/health` and `/search` are open; `/jobs`, `/resumes`,
+   `/tailor`, `/cover-letter` and `/fit` need the `X-API-Key` header.
+
+The first start is slow: the build downloads CPU-only PyTorch and, on the first request,
+the embedding model. Postgres data is kept in the `pgdata` volume, so jobs survive restarts.
+`.env` is excluded from the image by `.dockerignore`, so keys are passed in at run time and
+never baked into it.
+
 ## Retrieval-augmented generation (RAG)
 
 CareerPilot grounds every generated resume bullet in retrieved facts from the candidate's own resume.
