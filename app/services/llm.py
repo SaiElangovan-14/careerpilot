@@ -1,5 +1,6 @@
 import os
 import time
+import logging
 
 from dotenv import load_dotenv
 from google import genai
@@ -34,14 +35,23 @@ def _is_timeout_error(error: Exception) -> bool:
     return "504" in text or "DEADLINE_EXCEEDED" in text
 
 
+logger = logging.getLogger("careerpilot.llm")
+
+
 def _generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
     last_error = None
     skipped: set[str] = set()  # out of quota or timing out: not worth retrying this request
+
+    extra = {}
+    budget = os.getenv("LLM_THINKING_BUDGET")
+    if budget is not None:
+        extra["thinking_config"] = types.ThinkingConfig(thinking_budget=int(budget))
 
     for round_number in range(ROUNDS):
         for model in MODELS:
             if model in skipped:
                 continue
+            started = time.perf_counter()
             try:
                 response = get_client().models.generate_content(
                     model=model,
@@ -50,13 +60,23 @@ def _generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
                         response_mime_type="application/json",
                         response_schema=schema,
                         temperature=0,
+                        **extra,
                     ),
                 )
                 if response.parsed is None:
                     raise ValueError("model returned output that does not match the schema")
+                logger.info(
+                    "llm model=%s round=%d ok %.0fms",
+                    model, round_number + 1, (time.perf_counter() - started) * 1000,
+                )
                 return response.parsed
             except Exception as e:
                 last_error = e
+                logger.warning(
+                    "llm model=%s round=%d failed %.0fms %s: %s",
+                    model, round_number + 1, (time.perf_counter() - started) * 1000,
+                    type(e).__name__, str(e)[:100],
+                )
                 if _is_quota_error(e) or _is_timeout_error(e):
                     skipped.add(model)
 
@@ -71,7 +91,7 @@ import hashlib
 import json
 import os
 
-CACHE_PATH = ".llm_cache.json"
+CACHE_PATH = os.getenv("LLM_CACHE_PATH", ".llm_cache.json")
 
 
 def _cache_load() -> dict:

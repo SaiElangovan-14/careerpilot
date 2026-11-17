@@ -20,10 +20,13 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql+psycopg2://careerpilot:careerpilot@db:5432/careerpilot
+      LLM_THINKING_BUDGET: "0"
+      LLM_CACHE_PATH: /data/llm_cache.json
     ports:
       - "8001:8000"
     volumes:
       - hf_cache:/root/.cache/huggingface
+      - llm_cache:/data
     depends_on:
       db:
         condition: service_healthy
@@ -31,3 +34,4 @@ services:
 volumes:
   pgdata:
   hf_cache:
+  llm_cache:
