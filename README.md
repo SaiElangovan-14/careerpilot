@@ -1,4 +1,55 @@
-# careerpilot
+# CareerPilot
+
+![tests](https://github.com/SaiElangovan-14/careerpilot/actions/workflows/tests.yml/badge.svg)
+
+An AI copilot for job applications. Give it a job posting and your resume, and it finds the resume facts that matter, writes tailored bullets and cover letters, and shows where you fit and where you have gaps. Every generated sentence cites a real resume fact and is checked before it is shown, so it cannot invent experience.
+
+Stack: Python, FastAPI, Postgres + pgvector, Gemini, Docker.
+
+## How it works
+
+```
+resume --> parse (LLM, schema-validated) --> sentence-level chunks --> embeddings in pgvector
+                                                                              |
+job posting --> hybrid retrieval (Postgres full-text + vector, fused with RRF) -+
+                                                                              v
+                          generate (must cite chunk ids) --> verify --> bullets / cover letter / fit report
+                          verify = grounding check + number check + skill check + LLM judge
+                          a failing sentence gets one rewrite, then is dropped
+```
+
+## Try it
+
+```
+docker compose up --build
+```
+
+Needs a `.env` file next to `docker-compose.yml` (see "Run with Docker" below). Then open http://localhost:8001/docs.
+
+## Results at a glance
+
+| What | Result |
+|---|---|
+| Faithfulness judge | catches 14/14 planted faults, 0/10 false flags |
+| Resume parsing (16 labelled skills) | recall 1.00 with the LLM parser vs 0.375 with regex |
+| Retrieval, real postings (5 postings) | hybrid ranks a relevant chunk first on every posting (MRR 1.00) |
+| Tests | 54 pytest tests, run in CI on every push |
+
+All eval sets are small. The caveats are stated next to each result below.
+
+## Latency
+
+`POST /fit` makes two sequential Gemini calls. Measured in Docker: about 32 s uncached (13 to 18 s per call), and about 0.1 s when the answer is cached. The cache survives restarts through a Docker volume. Most of the time is model latency, not application code.
+
+## Known limitations
+
+- Eval sets are small and the labels are my own judgment calls, so I treat close results as inconclusive.
+- Cover letters read like a list of verified facts, because the verifier rejects relevance claims it cannot ground.
+- A skill that appears only in a technology list counts as weaker evidence than described work.
+- The rate limiter keeps counters in memory (a real deployment would use Redis).
+
+---
+
 ## Evaluation
 
 Golden set: 30 hand-written job postings and 12 queries with labeled relevant jobs
