@@ -13,3 +13,4 @@ check_models.py
 out.txt
 .llm_cache.json
 .envchunks.txt
+chunks.txt
