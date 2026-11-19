@@ -37,7 +37,7 @@ def setup(monkeypatch, outcomes):
 
 def test_retries_after_overload_then_succeeds(monkeypatch):
     overload = Exception("503 UNAVAILABLE high demand")
-    client, sleeps = setup(monkeypatch, [overload, overload, overload, Out(value="ok")])
+    client, sleeps = setup(monkeypatch, [overload] * len(llm.MODELS) + [Out(value="ok")])
     result = llm._generate_uncached("p", Out)
     assert result.value == "ok"
     assert client.calls == llm.MODELS + [llm.MODELS[0]]
@@ -46,7 +46,7 @@ def test_retries_after_overload_then_succeeds(monkeypatch):
 
 def test_quota_exhausted_models_are_not_retried(monkeypatch):
     quota = Exception("429 RESOURCE_EXHAUSTED")
-    client, sleeps = setup(monkeypatch, [quota, quota, quota])
+    client, sleeps = setup(monkeypatch, [quota] * len(llm.MODELS))
     with pytest.raises(RuntimeError):
         llm._generate_uncached("p", Out)
     assert client.calls == llm.MODELS
@@ -55,10 +55,10 @@ def test_quota_exhausted_models_are_not_retried(monkeypatch):
 
 def test_gives_up_after_all_rounds(monkeypatch):
     overload = Exception("503 UNAVAILABLE")
-    client, sleeps = setup(monkeypatch, [overload] * 9)
+    client, sleeps = setup(monkeypatch, [overload] * (len(llm.MODELS) * llm.ROUNDS))
     with pytest.raises(RuntimeError):
         llm._generate_uncached("p", Out)
-    assert len(client.calls) == 9
+    assert len(client.calls) == len(llm.MODELS) * llm.ROUNDS
     assert sleeps == [5, 15]
 
 def test_model_that_times_out_is_skipped_for_the_rest_of_the_request(monkeypatch):

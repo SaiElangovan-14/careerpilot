@@ -9,10 +9,10 @@ from pydantic import BaseModel
 
 load_dotenv()
 
-MODELS = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash"]
+MODELS = ["gemini-3.6-flash", "gemini-3.1-flash-lite", "gemini-3.7-flash", "gemini-3.8-flash"]
 ROUNDS = 3
 BACKOFF_SECONDS = [5, 15]  # wait after round 1, then after round 2
-DEADLINE_SECONDS = float(os.getenv("LLM_DEADLINE_SECONDS", "60"))  # stop trying new attempts after this many seconds
+DEADLINE_SECONDS = float(os.getenv("LLM_DEADLINE_SECONDS", "75"))  # stop trying new attempts after this many seconds
 
 _client = None
 
