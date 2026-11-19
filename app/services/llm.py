@@ -12,6 +12,7 @@ load_dotenv()
 MODELS = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash"]
 ROUNDS = 3
 BACKOFF_SECONDS = [5, 15]  # wait after round 1, then after round 2
+DEADLINE_SECONDS = float(os.getenv("LLM_DEADLINE_SECONDS", "60"))  # stop trying new attempts after this many seconds
 
 _client = None
 
@@ -34,6 +35,14 @@ def _is_timeout_error(error: Exception) -> bool:
     text = str(error)
     return "504" in text or "DEADLINE_EXCEEDED" in text
 
+class LLMAuthError(RuntimeError):
+    """The API key was rejected. Retrying cannot fix this."""
+
+
+def _is_auth_error(error: Exception) -> bool:
+    code = getattr(error, "code", None)
+    text = str(error)
+    return code in (401, 403) or "UNAUTHENTICATED" in text or "PERMISSION_DENIED" in text
 
 logger = logging.getLogger("careerpilot.llm")
 
@@ -46,11 +55,14 @@ def _generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
     budget = os.getenv("LLM_THINKING_BUDGET")
     if budget is not None:
         extra["thinking_config"] = types.ThinkingConfig(thinking_budget=int(budget))
+    overall_start = time.monotonic()
 
     for round_number in range(ROUNDS):
         for model in MODELS:
             if model in skipped:
                 continue
+            if last_error is not None and time.monotonic() - overall_start >= DEADLINE_SECONDS:
+                raise RuntimeError(f"LLM deadline exceeded: {last_error}")
             started = time.perf_counter()
             try:
                 response = get_client().models.generate_content(
@@ -72,6 +84,8 @@ def _generate_uncached(prompt: str, schema: type[BaseModel]) -> BaseModel:
                 return response.parsed
             except Exception as e:
                 last_error = e
+                if _is_auth_error(e):
+                    raise LLMAuthError(f"Gemini rejected the API key: {str(e)[:200]}") from e
                 logger.warning(
                     "llm model=%s round=%d failed %.0fms %s: %s",
                     model, round_number + 1, (time.perf_counter() - started) * 1000,
